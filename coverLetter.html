@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Cover Letter Generator</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="bg-slate-100 min-h-screen py-10">
+    <div class="max-w-4xl mx-auto px-4">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-slate-800">
+                AI Cover Letter Generator
+            </h1>
+            <p class="text-slate-600 mt-2">
+                Generate professional cover letters using AI
+            </p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-2xl font-semibold mb-6">
+                Candidate Information
+            </h2>
+            <form id="form" action="" method="post">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="font-medium">
+                            Candidate Name
+                        </label>
+                        <input type="text" id="name" class="w-full mt-2 border rounded-lg p-3">
+                    </div>
+                    <div>
+                        <label class="font-medium">
+                            Job Role
+                        </label>
+                        <input type="text" id="role" class="w-full mt-2 border rounded-lg p-3">
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label class="font-medium">
+                        Target Company
+                    </label>
+                    <input type="text" id="company" class="w-full mt-2 border rounded-lg p-3">
+                </div>
+                <div class="mt-4">
+                    <label class="font-medium">
+                        Key Skills
+                    </label>
+                    <textarea id="skills" rows="4" class="w-full mt-2 border rounded-lg p-3"></textarea>
+                </div>
+                <div class="mt-4">
+                    <label class="font-medium">
+                        Upload Resume (Optional)
+                    </label>
+                    <input type="file" accept=".pdf" id="resume" class="w-full mt-2 border rounded-lg p-3">
+                </div>
+                <button id="generateBtn"
+                    class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold cursor-pointer">
+                    Generate Cover Letter
+                </button>
+            </form>
+        </div>
+
+        <div id="loader" class="hidden text-center mt-6 text-blue-600 font-bold text-lg cursor-pointer">
+            Generating...
+        </div>
+
+        <div id="outputSection" class="bg-white rounded-2xl shadow-lg p-6 mt-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-semibold">
+                    Generated Cover Letter
+                </h2>
+                <button id="copyBtn"
+                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg cursor-pointer">
+                    Copy
+                </button>
+            </div>
+            <div id="letterOutput" class="bg-slate-50 border rounded-lg p-5 whitespace-pre-wrap min-h-[250px]">
+                Your generated cover letter will appear here...
+            </div>
+        </div>
+    </div>
+    <script>
+        const form = document.getElementById("form");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const loader = document.getElementById("loader");
+            const output = document.getElementById("letterOutput");
+
+            const name = document.getElementById("name").value;
+            const role = document.getElementById("role").value;
+            const company = document.getElementById("company").value;
+            const skills = document.getElementById("skills").value;
+
+            const resumeFile = document.getElementById("resume").files[0];
+
+            const prompt = `Write a professional cover letter.
+            Candidate name: ${name}
+            Job role: ${role}
+            Company name: ${company}
+            Skills: ${skills}
+            `;
+
+            try {
+                loader.classList.remove("hidden");
+                output.innerText = "";
+
+                let response;
+
+                // If resume uploaded
+                if (resumeFile) {
+                    const formData = new FormData();
+
+                    formData.append("resume", resumeFile);
+                    formData.append("name", name);
+                    formData.append("role", role);
+                    formData.append("company", company);
+                    formData.append("skills", skills);
+
+                    response = await fetch(
+                        "http://localhost:8000/api/generate",
+                        {
+                            method: "POST",
+                            body: formData,
+                        }
+                    );
+                }
+
+                // If no resume uploaded
+                else {
+                    response = await fetch(
+                        "http://localhost:8000/api/generate",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ prompt }),
+                        }
+                    );
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    output.innerText = data.response;
+                } else {
+                    output.innerText =
+                        data.message || "Failed to generate cover letter.";
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                output.innerText = error.message;
+            } finally {
+                loader.classList.add("hidden");
+            }
+        });
+
+    </script>
+</body>
+
+</html>
