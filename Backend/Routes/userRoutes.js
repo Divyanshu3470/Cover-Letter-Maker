@@ -1,7 +1,7 @@
 import express from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from "dotenv";
-import pdfParse from "pdf-parse";
+import pdfParse from "pdf-parse-new";
 import upload from "../middleware/upload.js";
 
 dotenv.config();
