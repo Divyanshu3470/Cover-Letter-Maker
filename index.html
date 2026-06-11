@@ -99,6 +99,7 @@
             const skills = document.getElementById("skills").value;
 
             const resumeFile = document.getElementById("resume").files[0];
+            const API_URL = "https://cover-letter-maker-svp1.onrender.com";
 
             copyBtn.addEventListener("click", () => {
                 const text = document.getElementById("letterOutput").innerText;
@@ -154,9 +155,7 @@
 
                 // If no resume uploaded
                 else {
-                    response = await fetch(
-                        "http://localhost:8000/api/generate",
-                        {
+                    response = await fetch(API_URL ,{
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
