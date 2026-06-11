@@ -1,20 +1,34 @@
-import express from 'express'
-import cors from 'cors'
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
 import userRoutes from "./Routes/userRoutes.js";
-import dotenv from 'dotenv'
 
+dotenv.config();
 
-const app = express()
+const app = express();
 
-app.use(cors());
-app.use(express.json())
+app.use(
+    cors({
+        origin: [
+            "https://coverletter-maker.netlify.app",
+            "http://localhost:5500",
+            "http://127.0.0.1:5500"
+        ]
+    })
+);
+
+app.use(express.json());
+
+app.get("/", (req, res) => {
+    res.send("Backend is running");
+});
+
 app.use("/api", userRoutes);
 
 const PORT = process.env.PORT || 8000;
 
-app.listen(PORT , (req, res)=>{
-    console.log("server is running")
-})
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
 
-export default app
+export default app;
