@@ -85,7 +85,7 @@
     </div>
     <script>
         const API_URL =
-            "https://cover-letter-maker-svp1.onrender.com/api/generate";
+            "https://cover-letter-maker-svp1-dval.onrender.com/api/generate";
 
         const form = document.getElementById("form");
         const loader = document.getElementById("loader");
@@ -122,28 +122,22 @@
             e.preventDefault();
 
             const name = document.getElementById("name").value.trim();
-
             const role = document.getElementById("role").value.trim();
-
             const company = document.getElementById("company").value.trim();
-
             const skills = document.getElementById("skills").value.trim();
-
             const resumeFile = document.getElementById("resume").files[0];
 
-            // Validation
             if (!name || !role || !company || !skills) {
-                alert(
-                    "Please fill all required fields."
-                );
+                alert("Please fill all required fields.");
                 return;
             }
 
             loader.classList.remove("hidden");
             output.innerText = "";
 
+            let response;
+
             try {
-                // Resume Uploaded
                 if (resumeFile) {
                     const formData = new FormData();
 
@@ -153,14 +147,12 @@
                     formData.append("company", company);
                     formData.append("skills", skills);
 
-                    let response = await fetch(API_URL, {
+                    response = await fetch(API_URL, {
                         method: "POST",
                         body: formData
                     });
-                }
 
-                // No Resume Uploaded
-                else {
+                } else {
                     const prompt = `
 Generate a professional cover letter.
 
@@ -175,31 +167,23 @@ Write a well-structured, professional and ATS-friendly cover letter.
                     response = await fetch(API_URL, {
                         method: "POST",
                         headers: {
-                            "Content-Type":
-                                "application/json"
+                            "Content-Type": "application/json"
                         },
-                        body: JSON.stringify({
-                            prompt
-                        })
+                        body: JSON.stringify({ prompt })
                     });
                 }
 
-                const data =
-                    await response.json();
+                const data = await response.json();
 
                 if (data.success) {
-                    output.innerText =
-                        data.response;
+                    output.innerText = data.response;
                 } else {
-                    output.innerText =
-                        data.message ||
-                        "Failed to generate cover letter.";
+                    output.innerText = data.message || "Failed to generate cover letter.";
                 }
+
             } catch (error) {
                 console.error(error);
-
-                output.innerText =
-                    "Failed to connect to server. Please try again.";
+                output.innerText = "Failed to connect to server. Please try again.";
             } finally {
                 loader.classList.add("hidden");
             }
