@@ -1,7 +1,7 @@
 import express from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from "dotenv";
-import pdf from "pdf-parse";
+import pdfParse from "pdf-parse";
 import upload from "../middleware/upload.js";
 
 dotenv.config();
@@ -20,7 +20,7 @@ router.post(
             let prompt = "";
 
             if (req.file) {
-                const pdfData = await pdf(req.file.buffer);
+                const pdfData = await pdfParse(req.file.buffer);
 
                 prompt = `
 Generate a professional cover letter.
