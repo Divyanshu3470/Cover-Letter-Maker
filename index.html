@@ -127,11 +127,6 @@
             const skills = document.getElementById("skills").value.trim();
             const resumeFile = document.getElementById("resume").files[0];
 
-            if (!name || !role || !company || !skills) {
-                alert("Please fill all required fields.");
-                return;
-            }
-
             loader.classList.remove("hidden");
             output.innerText = "";
 
